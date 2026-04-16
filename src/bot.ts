@@ -203,7 +203,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody)
         });
         
-        const result = await response.json(); // 解析 n8n 返回的 json
+        const result = await response.json() as { code?: string }; // 加上类型定义
 
         if (result && result.code) {
           // 第二步：收到码了，编辑原消息发给玩家 (ephemeral)
