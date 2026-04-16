@@ -199,12 +199,27 @@ client.on(Events.InteractionCreate, async (interaction) => {
           userId: user.id, userTag: user.tag, gameInfo, emailInfo, timestamp: new Date().toISOString()
         };
         
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000); // 15秒超时
+        
         const response = await fetch(N8N_FORM_WEBHOOK_URL, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody)
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
         });
         
-        const result = await response.json() as { code?: string }; // 加上类型定义
-
+        clearTimeout(timeout);
+        
+        // 先检查响应状态
+        if (!response.ok) {
+          throw new Error(`n8n responded with status ${response.status}`);
+        }
+        
+        const rawText = await response.text();
+        console.log('📦 n8n raw response:', rawText);
+        
+        const result = (rawText ? JSON.parse(rawText) : {}) as { code?: string };
         if (result && result.code) {
           // 第二步：收到码了，编辑原消息发给玩家 (ephemeral)
           await interaction.editReply(`Your verify is completed! 🎉\nHere is your extra reward code: **${result.code}**\n\nWait no longer... gm will contact you later with extra info.`);
