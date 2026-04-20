@@ -219,17 +219,19 @@ client.on(Events.InteractionCreate, async (interaction) => {
         const rawText = await response.text();
         console.log('📦 n8n raw response:', rawText);
         
-        const result = (rawText ? JSON.parse(rawText) : {}) as { code?: string };
+        const result = (rawText ? JSON.parse(rawText) : {}) as { code?: string; row_number?: number };
+        
         if (result && result.code) {
-          // 第二步：收到码了，编辑原消息发给玩家 (ephemeral)
           await interaction.editReply(`Your verify is completed! 🎉\nHere is your extra reward code: **${result.code}**\n\nWait no longer... gm will contact you later with extra info.`);
-
-          // 第三步：向 n8n 发送确认信息，告知发放成功，更新表格
+        
+          // 发 confirm 时带上 row_number
           await fetch(N8N_FORM_WEBHOOK_URL, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              action: 'confirm_code', // ✅ 告诉 n8n 这是发放成功的确认
+              action: 'confirm_code',
               code: result.code,
+              row_number: result.row_number,  // ← 加这个
               userId: user.id,
               timestamp: new Date().toISOString()
             })
