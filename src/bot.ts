@@ -432,7 +432,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
               action: 'confirm_code',
               code: result.code,
               row_number: result.row_number,
-              discord_id: user.id,
+              userId: user.id,
               timestamp: new Date().toISOString()
             })
           });
