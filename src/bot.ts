@@ -385,7 +385,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         });
         await thread.members.add(user.id);
         await thread.members.add(ADMIN_USER_ID);
-        await thread.send(`<@${user.id}> wait no longer... gm will contact you soon`);
+        await thread.send(`<@${user.id}> pls wait... gm will contact you soon`);
       }
     } catch (error) {}
 
@@ -416,7 +416,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         const result = (rawText ? JSON.parse(rawText) : {}) as { code?: string; row_number?: number };
 
         if (result && result.code) {
-          await interaction.editReply(`Your verify is completed! 🎉\nHere is your extra reward code: **${result.code}**\n\nWait no longer... gm will contact you later with extra info.`);
+          await interaction.editReply(`Your verify is completed! 🎉\nHere is your extra reward code: **${result.code}**\n\nPls wait... gm will contact you later with extra info.`);
 
           // 移除 wait role
           try {
