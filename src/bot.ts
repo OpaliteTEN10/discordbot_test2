@@ -48,12 +48,17 @@ const commands = [
     .setDescription('Start the verification process to claim extra rewards'),
 
   new SlashCommandBuilder()
-    .setName('embed')
-    .setDescription('Create a custom embed message with a verify button (Admin Only)')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-    .addStringOption(option => option.setName('title').setDescription('The title of the embed').setRequired(true))
-    .addStringOption(option => option.setName('description').setDescription('The main text of the embed').setRequired(true))
-    .addStringOption(option => option.setName('button_text').setDescription('The text displayed on the button').setRequired(true)),
+  .setName('embed')
+  .setDescription('Create a custom embed message with a verify button (Admin Only)')
+  .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+  .addStringOption(option => option.setName('title').setDescription('The title of the embed').setRequired(true))
+  .addStringOption(option => option.setName('description').setDescription('The main text of the embed').setRequired(true))
+  .addStringOption(option => option.setName('button_text').setDescription('The text displayed on the button').setRequired(true))
+  .addStringOption(option => 
+    option.setName('image_url')
+      .setDescription('URL of the guide image to display in the embed')
+      .setRequired(false)  // 可选，不填就没有图片
+  ),
 
   // ✅ birthday 指令暂时隐藏，需要时取消注释
   // new SlashCommandBuilder()
@@ -150,18 +155,29 @@ client.on(Events.InteractionCreate, async (interaction) => {
     }
 
     if (interaction.commandName === 'embed') {
-      const title = interaction.options.getString('title')!;
-      const description = interaction.options.getString('description')!;
-      const buttonText = interaction.options.getString('button_text')!;
-      const embed = new EmbedBuilder().setTitle(title).setDescription(description).setColor(0x0099FF);
-      const verifyButton = new ButtonBuilder()
-        .setCustomId('trigger_verify_modal')
-        .setLabel(buttonText)
-        .setStyle(ButtonStyle.Primary);
-      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(verifyButton);
-      await interaction.reply({ embeds: [embed], components: [row] });
-    }
+  const title = interaction.options.getString('title')!;
+  const description = interaction.options.getString('description')!;
+  const buttonText = interaction.options.getString('button_text')!;
+  const imageUrl = interaction.options.getString('image_url'); // 新增
 
+  const embed = new EmbedBuilder()
+    .setTitle(title)
+    .setDescription(description)
+    .setColor(0x0099FF);
+
+  // ✅ 新增：如果有图片URL就加进去
+  if (imageUrl) {
+    embed.setImage(imageUrl);
+  }
+
+  const verifyButton = new ButtonBuilder()
+    .setCustomId('trigger_verify_modal')
+    .setLabel(buttonText)
+    .setStyle(ButtonStyle.Primary);
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents(verifyButton);
+  await interaction.reply({ embeds: [embed], components: [row] });
+}
     // ✅ birthday 指令处理暂时隐藏，需要时取消注释
     // if (interaction.commandName === 'birthday') { ... }
 
