@@ -259,10 +259,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
       console.log('📦 n8n raw response:', rawText);
 
       const result = (rawText ? JSON.parse(rawText) : {}) as {
-        status?: string;    // 'already_verified' | 'no_reward' | 'success'
+        status?: string;    // 'already_verified' | 'uid_not_found' | 'no_reward' | 'success'
         vipLevel?: string;
       };
-
       // ✅ UID 已验证过
       if (result.status === 'already_verified') {
         await interaction.editReply(
@@ -270,7 +269,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
         );
         return;
       }
-
+      // ✅ 新增：UID 在VIP名单里找不到
+      if (result.status === 'uid_not_found') {
+        await interaction.editReply(
+          'There seems to be some error with your info, please recheck your UID.'
+        );
+        return;
+      }
       // ✅ VIP 等级不足
       if (result.status === 'no_reward') {
         await interaction.editReply('No rewards available now.');
