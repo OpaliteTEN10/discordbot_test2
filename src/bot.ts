@@ -198,6 +198,8 @@ client.on(Events.InteractionCreate, async (interaction) => {
             action: 'admin_get_code',
             requestedBy: interaction.user.tag,
             requestedById: interaction.user.id,
+            channelId: interaction.channelId,                          // ✅ 新增
+            channelName: (interaction.channel as any)?.name || '',     // ✅ 新增
             timestamp: new Date().toISOString()
           }),
           signal: controller.signal
