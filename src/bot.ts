@@ -189,7 +189,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         if (!N8N_FORM_WEBHOOK_URL) throw new Error('Webhook URL not set');
 
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15000);
+        const timeout = setTimeout(() => controller.abort(), 30000);
 
         const response = await fetch(N8N_FORM_WEBHOOK_URL, {
           method: 'POST',
@@ -209,10 +209,10 @@ client.on(Events.InteractionCreate, async (interaction) => {
         const result = (rawText ? JSON.parse(rawText) : {}) as { code?: string; message?: string };
 
         if (result.code) {
-          await interaction.editReply(
-            `✅ **Gift Code:**\n\`\`\`\n${result.code}\n\`\`\`\n📋 Copy the code above and send it to the player.\n⚠️ This code has been marked as **used**.`
-          );
-        } else {
+        await interaction.editReply(
+          `✅ **Gift Code:**\n\`\`\`\n${result.code}\n\`\`\`\n📋 **Ready-to-send message** (copy and send to player):\n\`\`\`\n${result.message}\n\`\`\`\n⚠️ This code has been marked as **used**.`
+        );
+      } else {
           await interaction.editReply(result.message || '❌ No unused codes available. Please add more codes to the sheet.');
         }
       } catch (error) {
